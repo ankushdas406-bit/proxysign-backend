@@ -2,6 +2,33 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+// TEMPORARY ADMIN CREATION ROUTE (DELETE AFTER USE)
+router.post("/create-admin", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password required" });
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ error: "Admin already exists" });
+    }
+
+    const newAdmin = await User.create({
+      name: name || "Admin",
+      email,
+      password,
+      role: "admin"
+    });
+
+    res.json({ message: "Admin created", user: newAdmin });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // LOGIN
 router.post("/login", async (req, res) => {
