@@ -12,6 +12,7 @@ module.exports = async function(req, res, next){
 
   try {
     const JWT_SECRET = process.env.JWT_SECRET || "DEFAULT_DEV_SECRET";
+    console.log("VERIFY using secret:", JWT_SECRET);
 
     const payload = jwt.verify(token, JWT_SECRET);
 

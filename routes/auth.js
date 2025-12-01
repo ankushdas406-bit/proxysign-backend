@@ -16,6 +16,7 @@ router.post("/login", async (req, res) => {
 
     // USE SAME SECRET FOR BOTH SIGN + VERIFY
     const JWT_SECRET = process.env.JWT_SECRET || "DEFAULT_DEV_SECRET";
+    console.log("LOGIN using secret:", JWT_SECRET);
 
     // CREATE TOKEN
     const token = jwt.sign(
@@ -42,3 +43,4 @@ router.post("/login", async (req, res) => {
 });
 
 module.exports = router;
+
