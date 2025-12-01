@@ -3,19 +3,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
+
+// ROUTES
 const authRoutes = require('./routes/auth');
 const teacherRoutes = require('./routes/teachers');
 const lectureRoutes = require('./routes/lectures');
 const attendanceRoutes = require('./routes/attendance');
-
+const attendanceSubmit = require('./routes/attendanceSubmit');
+const statsRoutes = require('./routes/stats');
 
 const app = express();
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
 
-
-
+// CORS MUST COME FIRST
 app.use(cors({
   origin: [
     "http://localhost:5173",
@@ -27,29 +26,39 @@ app.use(cors({
   credentials: true
 }));
 
+// BODY PARSER
+app.use(express.json());
 
+// SECURITY HEADERS
+app.use(helmet());
 
-const PORT = process.env.PORT || 4000;
+// CONNECT MONGODB
+mongoose.connect(process.env.MONGO_URI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true 
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => { 
+  console.error('MongoDB connection error:', err);
+  process.exit(1);
+});
 
-// Connect MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(()=> console.log('MongoDB connected'))
-  .catch(err => { console.error('MongoDB connection error', err); process.exit(1); });
-
-// Routes
+// ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/lectures', lectureRoutes);
 app.use('/api/attendance', attendanceRoutes);
-app.use("/api/attendance", require("./routes/attendanceSubmit"));
-app.use("/api/stats", require("./routes/stats"));
+app.use('/api/attendance', attendanceSubmit);
+app.use('/api/stats', statsRoutes);
 
-app.get('/', (req,res)=> res.json({ ok:true, message: 'Proxysign backend is running' }));
+// HEALTH CHECK
+app.get('/', (req, res) => {
+  res.json({ ok: true, message: 'Proxysign backend is running' });
+});
 
-
+// START SERVER
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
