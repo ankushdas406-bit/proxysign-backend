@@ -45,7 +45,10 @@ app.use("/api/stats", require("./routes/stats"));
 
 app.get('/', (req,res)=> res.json({ ok:true, message: 'Proxysign backend is running' }));
 
-app.listen(4000, "0.0.0.0", () => {
-  console.log("Server running on 0.0.0.0:4000");
+
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
+
 
