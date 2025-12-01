@@ -14,13 +14,13 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // JWT SECRET FROM ENV
-    const secret = process.env.JWT_SECRET || "DEFAULT_DEV_SECRET";
+    // USE SAME SECRET FOR BOTH SIGN + VERIFY
+    const JWT_SECRET = process.env.JWT_SECRET || "DEFAULT_DEV_SECRET";
 
     // CREATE TOKEN
     const token = jwt.sign(
       { id: admin._id, role: admin.role },
-      secret,
+      JWT_SECRET,
       { expiresIn: "7d" }
     );
 
