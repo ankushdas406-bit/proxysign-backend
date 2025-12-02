@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
+console.log("RUNNING BACKEND SOURCE:", __filename);
+
 
 // ROUTES
 const authRoutes = require('./routes/auth');
