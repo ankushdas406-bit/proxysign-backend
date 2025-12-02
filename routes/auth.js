@@ -5,7 +5,9 @@ const jwt = require("jsonwebtoken");
 
 console.log("AUTH ROUTE LOADED FROM:", __filename);
 
+// ==================================================
 // TEMP ADMIN CREATION ROUTE (DELETE AFTER USE)
+// ==================================================
 router.post("/create-admin", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -28,11 +30,14 @@ router.post("/create-admin", async (req, res) => {
 
     res.json({ message: "Admin created", user: newAdmin });
   } catch (err) {
+    console.error("CREATE-ADMIN ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// LOGIN
+// ==================================================
+// LOGIN ROUTE
+// ==================================================
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -43,11 +48,10 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // USE SAME SECRET FOR BOTH SIGN + VERIFY
     const JWT_SECRET = process.env.JWT_SECRET || "DEFAULT_DEV_SECRET";
     console.log("LOGIN using secret:", JWT_SECRET);
 
-    // CREATE TOKEN
+    // Create JWT token
     const token = jwt.sign(
       { id: admin._id, role: admin.role },
       JWT_SECRET,
@@ -72,4 +76,3 @@ router.post("/login", async (req, res) => {
 });
 
 module.exports = router;
-
