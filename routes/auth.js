@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+
+console.log("AUTH ROUTE LOADED FROM:", __filename);
+
 // TEMP ADMIN CREATION ROUTE (DELETE AFTER USE)
 router.post("/create-admin", async (req, res) => {
   try {
