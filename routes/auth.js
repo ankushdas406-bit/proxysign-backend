@@ -1,78 +1,25 @@
 const express = require("express");
-const router = express.Router();
-const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-console.log("AUTH ROUTE LOADED FROM:", __filename);
+const router = express.Router();
 
-// ==================================================
-// TEMP ADMIN CREATION ROUTE (DELETE AFTER USE)
-// ==================================================
-router.post("/create-admin", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password required" });
-    }
-
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ error: "Admin already exists" });
-    }
-
-    const newAdmin = await User.create({
-      name: name || "Admin",
-      email,
-      password,
-      role: "admin"
-    });
-
-    res.json({ message: "Admin created", user: newAdmin });
-  } catch (err) {
-    console.error("CREATE-ADMIN ERROR:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ==================================================
-// LOGIN ROUTE
-// ==================================================
 router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    const admin = await User.findOne({ email });
+  const user = await User.findOne({ email });
+  if (!user) return res.status(400).json({ msg: "User not found" });
 
-    if (!admin || admin.password !== password) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return res.status(400).json({ msg: "Incorrect password" });
 
-    const JWT_SECRET = process.env.JWT_SECRET || "DEFAULT_DEV_SECRET";
-    console.log("LOGIN using secret:", JWT_SECRET);
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET
+  );
 
-    // Create JWT token
-    const token = jwt.sign(
-      { id: admin._id, role: admin.role },
-      JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role
-      }
-    });
-
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    res.status(500).json({ error: err.message });
-  }
+  res.json({ token, role: user.role, name: user.name });
 });
 
 module.exports = router;

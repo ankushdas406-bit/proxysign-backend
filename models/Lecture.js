@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
 
 const LectureSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  lat: { type: Number },
-  lon: { type: Number },
-  createdAt: { type: Date, default: Date.now }
+  name: { type: String, required: true },
+  teacher: { type: String, required: true },
 });
 
 module.exports = mongoose.model("Lecture", LectureSchema);
