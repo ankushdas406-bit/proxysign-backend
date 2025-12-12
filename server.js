@@ -22,7 +22,6 @@ app.use("/api/attendance", require("./routes/attendance"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/lectures", require("./routes/lectures"));
 app.use("/api/teachers", require("./routes/teachers"));
-app.use("/api/stats", require("./routes/stats"));
 
 // Default route
 app.get("/", (req, res) => {
